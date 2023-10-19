@@ -1,1 +1,9 @@
-# Kura_C4_D5.1
+# Objective
+
+# Steps
+
+# System Diagram
+
+# Optimization
+
+# Issues
