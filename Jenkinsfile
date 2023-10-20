@@ -26,17 +26,34 @@ junit 'test-reports/results.xml'
 }
 }
 stage ('Clean') {
-agent {label 'awsDeploy'}
-steps {
-sh '''#!/bin/bash
-if [[ $(ps aux | grep -i "gunicorn" | tr -s " " | head -n 1 | cut -d " " -f 2) != 0 ]]
-then
-ps aux | grep -i "gunicorn" | tr -s " " | head -n 1 | cut -d " " -f 2 > pid.txt
-kill $(cat pid.txt)
-exit 0
-fi
-'''
-}
+    parallel {
+        stage ('Clean Server01') {
+            agent {label 'awsDeploy'}
+            steps {
+                sh '''#!/bin/bash
+                if [[ $(ps aux | grep -i "gunicorn" | tr -s " " | head -n 1 | cut -d " " -f 2) != 0 ]]
+                then
+                ps aux | grep -i "gunicorn" | tr -s " " | head -n 1 | cut -d " " -f 2 > pid.txt
+                kill $(cat pid.txt)
+                exit 0
+                fi
+                '''
+            }
+        }
+        stage ('Clean Server02') {
+            agent {label 'awsDeploy2'}
+            steps {
+                sh '''#!/bin/bash
+                if [[ $(ps aux | grep -i "gunicorn" | tr -s " " | head -n 1 | cut -d " " -f 2) != 0 ]]
+                then
+                ps aux | grep -i "gunicorn" | tr -s " " | head -n 1 | cut -d " " -f 2 > pid.txt
+                kill $(cat pid.txt)
+                exit 0
+                fi
+                '''
+            }
+        }
+    }
 }
 stage ('Deploy') {
     parallel {
